@@ -5,36 +5,49 @@ let users = [];
 
 export const getUsers = (req, res) => {
   if (users.length > 0) {
-    res.send(users);
-  } else res.send("there is not user in database");
+    res.status(200).send(users);
+  } else res.status(404).send("There is not user in database");
 };
+
 export const createUser = (req, res) => {
   const user = req.body;
-  users.push({ id: uuidv4(), ...user });
-  res.send("user added succesfully");
+
+  if (user.firstname && user.lastname && user.age) {
+    users.push({ id: uuidv4(), ...user });
+    res.status(200).send("user added succesfully");
+  } else res.status(400).send("fistname, lastname and age are required to create a user");
 };
 
 export const getUser = (req, res) => {
   const { id } = req.params;
-  const wantedUser = users.find((user) => user.id == id);
-  res.send(wantedUser);
+
+  const user = users.find((user) => user.id == id);
+
+  if (user) {
+    res.status(200).send(user);
+  }
+  res.status(400).send("user not found");
 };
 
 export const deleteUser = (req, res) => {
   const { id } = req.params;
+  const noUserFound = !users.some((user) => user.id == id);
+  if (noUserFound) {
+    res.status(400).send("No user found to delete!");
+    return;
+  }
   users = users.filter((user) => user.id !== id);
-  res.send("user deleted succesfully");
+  res.status(200).send("user deleted succesfully");
 };
 
 export const updateUser = (req, res) => {
   const { id } = req.params;
-  const { firstname, lastname, age } = req.body;
+  const patch = req.body;
 
-  const user = users.find((user) => user.id == id);
+  let currentUser = users.find((user) => user.id == id);
 
-  if (firstname) user.firstname = firstname;
-  if (lastname) user.lastname = lastname;
-  if (age) user.age = age;
-
-  res.send("user changed succesfully");
+  if (currentUser) {
+    currentUser = { ...currentUser, ...patch };
+    res.status(200).send("user updated succesfully");
+  } else res.status(400).send("user to be updated not found");
 };
