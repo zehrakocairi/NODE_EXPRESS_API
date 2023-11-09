@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 
 app.use("/users", usersRoutes);
 
-app.listen(3010, () => {
-  console.log("server is listening on port localhost:3009");
+app.listen(3001, () => {
+  console.log("server is listening on port localhost:3001");
 });
 export default router;

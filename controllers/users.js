@@ -12,6 +12,11 @@ export const getUsers = (req, res) => {
 export const createUser = (req, res) => {
   const user = req.body;
 
+  if (Object.keys(user).length > 3) {
+    res.status(400).send("you should only include fistname, lastname and age in your request");
+    return;
+  }
+
   if (user.firstname && user.lastname && user.age) {
     users.push({ id: uuidv4(), ...user });
     res.status(200).send("user added succesfully");
@@ -25,6 +30,7 @@ export const getUser = (req, res) => {
 
   if (user) {
     res.status(200).send(user);
+    return;
   }
   res.status(400).send("user not found");
 };
@@ -48,6 +54,7 @@ export const updateUser = (req, res) => {
 
   if (currentUser) {
     currentUser = { ...currentUser, ...patch };
+    users = [users.find((user) => user.id != id), currentUser];
     res.status(200).send("user updated succesfully");
   } else res.status(400).send("user to be updated not found");
 };
